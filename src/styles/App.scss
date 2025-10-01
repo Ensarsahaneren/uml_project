@@ -1,0 +1,94 @@
+@use "./color.scss" as color;
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+  width: 100vw;
+  height: 100dvh; // mobil viewport uyumlu
+}
+
+.reactflow-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+/* Kenar çubuğundaki küçük örnek şekiller için ortak şablon */
+%sidebarNodes {
+  z-index: inherit;
+  background-color: transparent;
+
+  &.dikdortgen {
+    width: 2em;
+    height: 1em;
+  }
+
+  &.kare {
+    width: 2em;
+    height: 2em;
+  }
+
+  &.daire {
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+  }
+
+  &.elips {
+    width: 2em;
+    height: 1em;
+    border-radius: 50%;
+  }
+
+  &.yuvarlatılmış_dikdörtgen {
+    @extend .dikdortgen;
+    border-radius: 5px;
+  }
+
+  &.metin {
+    width: 2em;
+    height: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/* MUI Accordion görsel uyarlamaları */
+.sidebar {
+  .MuiPaper-root.MuiAccordion-root {
+    background-color: color.$sidebar;
+    box-shadow: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+
+    .MuiAccordionSummary-root {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    &::before {
+      background-color: transparent;
+    }
+  }
+
+  .nodes {
+    @extend %sidebarNodes;
+  }
+}
+
+/* Sürükleme sırasında oluşturulan hayalet kopya */
+.ghostImages {
+  @extend %sidebarNodes;
+  overflow: hidden !important;
+  background-color: #fff !important;
+  z-index: 1083 !important;
+  min-height: auto !important;
+  font-size: 1rem;
+}
+
+/* Hareketi azalt tercihine saygı */
+@media (prefers-reduced-motion: reduce) {
+  .App,
+  .reactflow-wrapper,
+  .sidebar {
+    transition: none !important;
+  }
+}

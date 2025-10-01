@@ -1,0 +1,27 @@
+.downloadButton {
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
+  z-index: 1081;
+
+  padding: 20px;
+  width: 20px;
+  height: 20px;
+  background-color: #2563eb; // mavi (Tailwind "blue-600")
+  color: white;
+  border-radius: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.2); // gölge
+
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: #1d4ed8; // hover rengi
+    transform: scale(1.05);
+  }
+}

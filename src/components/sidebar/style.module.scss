@@ -1,0 +1,127 @@
+@use "../../styles/color.scss" as color;
+
+.openSideNav {
+  position: fixed;
+  top: 10%;
+  left: 0;
+  z-index: 1080;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: color.$sidebar;
+  color: color.$onSidebar; // color.scss içinde varsa; yoksa varsayılan kalır
+  border-radius: 10px;
+  padding: 6px;              // tıklanabilir alan
+  margin-left: 4px;          // ekran kenarına yapışmasın
+  cursor: pointer;
+
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+  transition: transform .18s ease, box-shadow .18s ease;
+  will-change: transform;
+
+  &:hover { box-shadow: 4px 0 12px rgba(0, 0, 0, 0.28); }
+  &:active { transform: scale(.98); }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    border-radius: 12px;
+  }
+}
+
+.sidebar_wrapper {
+  position: fixed;
+  inset: 0 auto 0 0;          // top:0; left:0; bottom:0
+  z-index: 1080;
+
+  height: 100dvh;             // mobil viewport uyumlu
+  width: min(260px, 85vw);     // masaüstü 260px, mobilde daralır
+  max-width: 260px;
+
+  background-color: color.$sidebar;
+  color: color.$text;
+     // metin rengi (yoksa sil) 
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+
+  transform: translateX(0);    // açık
+  transition: transform .22s ease-out;
+  will-change: transform;
+
+  &.hidden {
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+
+  /* İç alan */
+  .description {
+    font-size: 0.9rem;
+    line-height: 1.35;
+    text-align: justify;
+    margin: 1rem 10px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+
+    .hide {
+      display: none;
+      pointer-events: none;
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
+        border-radius: 8px;
+      }
+    }
+  }
+
+  .sidebar__nodes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    place-items: center;
+    grid-auto-rows: 30px;
+
+    padding: 0 10px 12px;
+
+    /* Daha küçük ekranlarda 3 sütun */
+    @media (max-width: 1200px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    /* Çok küçük ekranlarda 2 sütun */
+    @media (max-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Yumuşak scrollbar (isteğe bağlı) */
+  &::-webkit-scrollbar { width: 10px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,.15);
+    border-radius: 8px;
+  }
+}
+
+/* Mobil: kapanma ikonu görünür olsun */
+@media (max-width: 800px) {
+  .sidebar_wrapper {
+    .description {
+      .hide {
+        display: block;
+        pointer-events: all;
+      }
+    }
+  }
+}
+
+/* Hareketi azalt tercihine saygı */
+@media (prefers-reduced-motion: reduce) {
+  .openSideNav,
+  .sidebar_wrapper {
+    transition: none !important;
+  }
+}

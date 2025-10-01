@@ -1,0 +1,71 @@
+.nodes {
+  border: 0.5px solid black;
+  cursor: pointer;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  min-width: inherit;
+  min-height: inherit;
+  border-radius: inherit;
+  background: #fff;
+
+  input {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: none;
+    outline: none;
+    margin: 0;
+    padding: 2px;
+    font-size: 0.75rem; // daha okunur
+    background: transparent;
+  }
+
+  .label {
+    font-size: 0.75rem;
+    text-decoration: inherit;
+    padding: 2px;
+    color: #111;
+  }
+
+  // 🔹 Özel şekiller
+  &.dikdortgen {
+    min-width: 1.7em;
+    min-height: 1em;
+  }
+
+  &.kare {
+    min-width: 2em;
+    min-height: 2em;
+  }
+
+  &.daire {
+    min-width: 2em;
+    min-height: 2em;
+    border-radius: 50%;
+  }
+
+  &.elips {
+    min-width: 2.5em;
+    min-height: 1.5em;
+    border-radius: 50%;
+  }
+
+  &.yuvarlatılmış_dikdörtgen {
+    @extend .dikdortgen;
+    border-radius: 6px;
+  }
+
+  &.metin {
+    min-width: 3em;
+    min-height: 1.5em;
+  }
+
+  // Örnek: özel tür
+  &.output {
+    border-color: red;
+  }
+}

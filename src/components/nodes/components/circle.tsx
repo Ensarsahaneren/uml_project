@@ -1,0 +1,15 @@
+// src/components/nodes/components/circle.tsx
+import { NodeType } from "../../../utils/home"; // ⬅️ düzeltildi
+import Node from "../node";
+
+type Props = {
+  data: { type: string };
+  onDragStart?: React.DragEventHandler<HTMLDivElement>;
+  draggable?: boolean;
+};
+
+const CircleNode = (props: Props) => {
+  return <Node nodeType={NodeType.DAIRE} {...props} />;
+};
+
+export default CircleNode;
