@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import style from "./style.module.scss";
 import { Box, Tab, Tabs } from "@mui/material";
-import StyleHandler from "./components/styleHandle"; // ✅ yol düzeltildi
+import StyleHandler from "./components/styleHandle";
 import FontHandler from "./components/fontHandler";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
@@ -30,7 +30,7 @@ const StylePanel = () => {
           onClick={() => toggleHidden(false)}
           sx={{ cursor: "pointer" }}
           aria-label="Stil panelini aç"
-          titleAccess="Stil panelini aç"   // ✅ title -> titleAccess
+          titleAccess="Stil panelini aç"   
         />
       </div>
 
@@ -45,7 +45,7 @@ const StylePanel = () => {
               className={style.hide}
               sx={{ cursor: "pointer" }}
               aria-label="Stil panelini kapat"
-              titleAccess="Stil panelini kapat"  // ✅ title -> titleAccess
+              titleAccess="Stil panelini kapat"  
             />
           </div>
 

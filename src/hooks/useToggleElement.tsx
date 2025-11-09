@@ -14,14 +14,14 @@ const useToggleElement = (width = 800) => {
       setIsHidden(window.innerWidth <= width);
     };
 
-    // ilk render’da kontrol et
+   
     handleResize();
 
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [width]); // sadece width değişirse yeniden bağlanır
+  }, [width]); 
 
   return { toggleHidden, isHidden };
 };

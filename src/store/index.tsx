@@ -6,15 +6,20 @@ import type { Dispatch, PropsWithChildren, CSSProperties } from "react";
 import type { XYPosition } from "@xyflow/react";
 import { NodeType } from "../utils/home";
 
-// --- Tipler ---
+export type NodeDataType = {
+  type: NodeType | string;
+  label?: string;            // ← eklendi (opsiyonel)
+  // gerekirse ileride başka alanlar da eklenebilir
+};
+
+
 export type PropertiesType = {
   id: string;
   type: NodeType | string;
   position: XYPosition;
-  data: { type: NodeType | string };
+  data: NodeDataType;         // ← burada kullan
   style: CSSProperties;
 };
-
 export type InitialStateType = {
   nodes: Record<string, PropertiesType>;
   selectedNodeId: string;
@@ -27,7 +32,6 @@ export const initialState: InitialStateType = {
   currentType: "",
 };
 
-// --- Actions ---
 export type AddAction = { type: "add"; payload: PropertiesType };
 export type SelectedNodeAction = {
   type: "selectedNode";
@@ -48,7 +52,6 @@ export type Action =
   | AddStyleAction
   | ChangeTypeAction;
 
-// --- Context ---
 export const Context = createContext<{
   state: InitialStateType;
   dispatch: Dispatch<Action>;
@@ -58,7 +61,7 @@ export const Context = createContext<{
   dispatch: (() => {}) as unknown as Dispatch<Action>,
 });
 
-// --- Reducer ---
+
 export function stateReducer(
   state: InitialStateType,
   action: Action
@@ -78,6 +81,7 @@ export function stateReducer(
       const { id } = action.payload;
       return { ...state, selectedNodeId: id };
     }
+    
     case "addStyle": {
       const id = state.selectedNodeId;
       if (!id) return state;
@@ -102,7 +106,7 @@ export function stateReducer(
   }
 }
 
-// --- Provider (default export) ---
+
 function Provider({ children }: PropsWithChildren) {
   const [state, dispatch] = useReducer(stateReducer, initialState);
   return (

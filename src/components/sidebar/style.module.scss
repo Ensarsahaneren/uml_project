@@ -32,17 +32,19 @@
 }
 
 .sidebar_wrapper {
-  position: fixed;
-  inset: 0 auto 0 0;          // top:0; left:0; bottom:0
+   position: fixed;
+  /* AppBar'ın altından başlasın (var yoksa 48px fallback) */
+  top: var(--topbar-h, 48px);
+  left: 0;
+  bottom: 0;
   z-index: 1080;
-
-  height: 100dvh;             // mobil viewport uyumlu
-  width: min(260px, 85vw);     // masaüstü 260px, mobilde daralır
+  height: 100dvh;             
+  width: min(260px, 85vw);   
   max-width: 260px;
 
   background-color: color.$sidebar;
   color: color.$text;
-     // metin rengi (yoksa sil) 
+     
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
 
   transform: translateX(0);    // açık
@@ -54,7 +56,7 @@
     pointer-events: none;
   }
 
-  /* İç alan */
+
   .description {
     font-size: 0.9rem;
     line-height: 1.35;

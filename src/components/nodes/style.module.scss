@@ -68,4 +68,99 @@
   &.output {
     border-color: red;
   }
+/* —— 3 bölmeli UML Sınıf kutusu —— */
+.classNode {
+  /* ÖNEMLİ: içerik kadar ölçülen kutu – canvas'a taşınca 100% olmasın */
+  width: max-content;        /* ← eskiden 100% idi: büyümenin sebebi buydu */
+  height: max-content;       /* ← eskiden 100% idi */
+  display: inline-flex;      /* içerik kadar yer kaplasın */
+  flex-direction: column;
+
+  /* genel görünüm */
+  .row {
+    padding: 4px 6px;
+    font-size: 0.75rem;
+    line-height: 1.25;
+    color: #111;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .title { font-weight: 700; }
+  }
+
+  .divider { height: 1px; background: rgba(0,0,0,.4); }
+
+  .input,
+  .textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.75rem;
+    color: #111;
+    resize: none;
+  }
+
+  .block {
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.74rem;
+  }
+
+  .muted { opacity: .7; }
 }
+
+/* sinif tipi için minimum boyut (sadece gerçek node’da işe yarasın) */
+.react-flow__node .nodes.sinif {
+  min-width: 10em;
+  min-height: 6em;
+  border-radius: 4px;
+}
+
+/* Sidebar önizlemesi küçük kalsın */
+.preview {
+  min-width: 2.8em !important;
+  min-height: 2.2em !important;
+  width: 2.8em !important;
+  height: 2.2em !important;
+
+  .row { padding: 2px 3px; font-size: 0.7rem; }
+  .divider { opacity: .6; }
+}
+/* ortak sınıf kutusu stilleri zaten vardı: .classNode {...} */
+
+/* Başlık varyantları */
+.stereotype { font-size: .7rem; opacity: .75; }
+.underlineTitle { text-decoration: underline; font-weight: 600; }
+
+/* Soyut başlık italik */
+.nodes.soyut_sinif .classNode .title,
+.nodes.soyut_sinif .title { font-style: italic; }
+
+/* Canvas'ta minimum boyutlar (sadece gerçek node'lara uygula) */
+.react-flow__node .nodes.sinif,
+.react-flow__node .nodes.soyut_sinif,
+.react-flow__node .nodes.arayuz,
+.react-flow__node .nodes.nesne {
+  min-width: 10em;
+  min-height: 6em;
+  border-radius: 4px;
+}
+
+/* Sidebar önizleme küçük kalsın */
+.preview { min-width: 2.8em !important; min-height: 2.2em !important; width: 2.8em !important; height: 2.2em !important; }
+
+
+}
+/* Sequence özel görünümler */
+.nodes.aktor      { min-width: 4.5em; min-height: 3.2em; background: #fff; }
+.nodes.lifeline   { min-width: 6em;   min-height: 10em;  background: #fff; }
+.nodes.aktivasyon { min-width: .8em;  min-height: 3em;   background: #fff; }
+.nodes.note       { background: #fffbe6; }
+.nodes.fragment   { border: 2px dashed #666; }
+

@@ -13,11 +13,11 @@ const handleDebounce = debounce((data: Partial<React.CSSProperties>) => {
   EventHandler.emit("update-style", data);
 }, 300);
 
-// ----- Yardımcı normalizasyonlar -----
+
 function normalizeFontWeight(
   v: React.CSSProperties["fontWeight"]
 ): "bold" | "normal" {
-  // TS tarafında number da gelebilir (700 vb.)
+
   if (v === "bold" || v === 700 || v === "700") return "bold";
   return "normal";
 }
@@ -84,9 +84,9 @@ const FontHandler = () => {
     dispatch({
       type: "addStyle",
       payload: {
-        fontWeight: next.bold,          // "bold" | "normal"
-        fontStyle: next.italic,         // "italic" | "normal"
-        textDecoration: next.underline, // "underline" | "none"
+        fontWeight: next.bold,          
+        fontStyle: next.italic,         
+        textDecoration: next.underline, 
       },
     });
 

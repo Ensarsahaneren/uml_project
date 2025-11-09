@@ -92,3 +92,9 @@
     transition: none !important;
   }
 }
+/* AppBar 48px olduğundan, ana içerik zaten <div style={{height:48}} /> ile itilmiş durumda.
+   Sidebar/StylePanel fixed top kullanıyorsa offset verelim: */
+
+.sidebar_wrapper { top: 48px; }   /* sol panel */
+.stylePanel      { top: 48px; }   /* sağ panel */
+

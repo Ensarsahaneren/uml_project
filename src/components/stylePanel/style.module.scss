@@ -14,7 +14,7 @@
   justify-content: center;
   align-items: center;
 
-  border-radius: 10px 0 0 10px; // sağ kenara yaslı olduğunda hoş görünür
+  border-radius: 10px 0 0 10px; 
   padding: 6px;
   cursor: pointer;
 
@@ -37,13 +37,13 @@
   z-index: 1080;
 
   background-color: color.$sidebar;
-  height: 100dvh;                // mobil uyumlu yükseklik
+  height: 100dvh;          
   width: min(260px, 85vw);
   max-width: 260px;
 
   box-shadow: -4px 0px 12px rgba(0, 0, 0, 0.4);
 
-  transform: translateX(0);      // açık durum
+  transform: translateX(0);  
   transition: transform .25s ease-out;
   will-change: transform;
 
@@ -96,7 +96,7 @@
   }
 }
 
-/* Hareket azaltma desteği */
+
 @media (prefers-reduced-motion: reduce) {
   .stylePanel,
   .openStyleBar {
