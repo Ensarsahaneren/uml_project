@@ -25,6 +25,12 @@ export default function ActorNode({
 
   const handleStyle = { top: "45%", opacity: 0 };
 
+  // Sidebar'daysa SVG'yi küçültmek için ölçek
+  const svgScale = inSidebar ? 0.5 : 1;
+  const containerStyle = inSidebar 
+    ? { transform: "scale(0.8)", transformOrigin: "center top", marginBottom: "-15px" } 
+    : {};
+
   return (
     <>
       <NodeResizer isVisible={selected} color="#ff0071" handleStyle={{ padding: "2px" }} lineStyle={{ padding: "3px" }} />
@@ -42,11 +48,10 @@ export default function ActorNode({
         className={`nodes ${NodeType.AKTOR}`} 
         draggable={draggable} 
         onDoubleClick={onDouble} 
-        title="Çift tıkla: düzenle"
-        // ŞEFFAFLIK BURADA
-        style={{ background: "transparent", border: "none", boxShadow: "none" }}
+        style={{ background: "transparent", border: "none", boxShadow: "none", ...containerStyle }}
       >
-        <svg width="60" height="80" viewBox="0 0 70 90" style={{ display: "block", margin: "0 auto" }}>
+        {/* SVG boyutunu ve içeriğini Sidebar durumuna göre ayarlıyoruz */}
+        <svg width={60 * svgScale} height={80 * svgScale} viewBox="0 0 70 90" style={{ display: "block", margin: "0 auto" }}>
           <circle cx="35" cy="14" r="10" stroke="#222" fill="#fff" strokeWidth="2" />
           <line x1="35" y1="24" x2="35" y2="56" stroke="#222" strokeWidth="2" />
           <line x1="12" y1="36" x2="58" y2="36" stroke="#222" strokeWidth="2" />
@@ -54,6 +59,7 @@ export default function ActorNode({
           <line x1="35" y1="56" x2="52" y2="82" stroke="#222" strokeWidth="2" />
         </svg>
 
+        {/* Sidebar'da yazı fontunu küçült */}
         {editing ? (
           <input
             ref={inputRef}
@@ -65,7 +71,12 @@ export default function ActorNode({
             style={{ textAlign: "center", marginTop: -5 }}
           />
         ) : (
-          <div style={{ textAlign: "center", fontSize: "0.8rem", fontWeight: 600, marginTop: -5 }} className={style.label}>
+          <div style={{ 
+            textAlign: "center", 
+            fontSize: inSidebar ? "0.6rem" : "0.8rem", 
+            fontWeight: 600, 
+            marginTop: inSidebar ? -2 : -5 
+          }} className={style.label}>
             {label}
           </div>
         )}

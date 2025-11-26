@@ -16,32 +16,35 @@ export default function ActionNode({ draggable, inSidebar, selected, initialValu
     inputRef.current?.focus();
   };
 
+  // GÜNCELLEME: zIndex: 50 eklendi. Artık noktalar kutunun üzerinde kalacak ve tıklanabilir olacak.
+  const handleStyle = { width: 8, height: 8, background: "#555", zIndex: 50 };
+
   return (
     <>
-      <NodeResizer isVisible={selected} color="#ff0071" />
+      <NodeResizer isVisible={selected} color="#1565C0" minWidth={80} minHeight={40} />
+      
       {!inSidebar && (
         <>
-          <Handle type="target" position={Position.Top} />
-          <Handle type="source" position={Position.Bottom} />
-          <Handle type="target" position={Position.Left} />
-          <Handle type="source" position={Position.Right} />
+          {/* ÜST: Giriş (Target) */}
+          <Handle type="target" position={Position.Top} id="top" style={handleStyle} />
+          
+          {/* ALT: Çıkış (Source) */}
+          <Handle type="source" position={Position.Bottom} id="bottom" style={handleStyle} />
+          
+          {/* SOL: Hem Giriş Hem Çıkış (Çift Handle) */}
+          <Handle type="target" position={Position.Left} id="left-target" style={handleStyle} />
+          <Handle type="source" position={Position.Left} id="left-source" style={handleStyle} />
+          
+          {/* SAĞ: Hem Giriş Hem Çıkış (Çift Handle) */}
+          <Handle type="target" position={Position.Right} id="right-target" style={handleStyle} />
+          <Handle type="source" position={Position.Right} id="right-source" style={handleStyle} />
         </>
       )}
 
       <div
-        className={`nodes ${NodeType.AKTIVITE_ISLEM}`}
+        className={`${style.activityNode} ${style.action} ${inSidebar ? style.sidebarItem : ''} nodes ${NodeType.AKTIVITE_ISLEM}`}
         draggable={draggable}
         onDoubleClick={onDouble}
-        style={{
-          background: "#89CFF0", // Mavi renk
-          border: "1px solid #000",
-          borderRadius: "20px",
-          padding: "8px 12px",
-          minWidth: "80px",
-          textAlign: "center",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: "0.8rem"
-        }}
       >
         {editing ? (
           <input
@@ -49,8 +52,6 @@ export default function ActionNode({ draggable, inSidebar, selected, initialValu
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             onBlur={() => setEditing(false)}
-            className={style.input}
-            style={{ textAlign: "center", background: "transparent", border: "none", outline: "none" }}
           />
         ) : (
           <span className={style.label}>{label}</span>

@@ -161,6 +161,8 @@ function Home() {
               height: 18,
             },
             style: { stroke: "#222" },
+            // Varsayılan olarak Step (köşeli) çizgi
+            type: "step", 
           },
           eds
         )
@@ -365,8 +367,13 @@ function Home() {
             onEdgeClick={onEdgeClick}
             onNodeClick={handleNodeClick}
             connectionMode={ConnectionMode.Loose}
-            connectionLineType={ConnectionLineType.Straight}
-            defaultEdgeOptions={{ style: { stroke: "#222" } }}
+            // Aktivite diyagramı için varsayılan olarak STEP (köşeli) çizgi
+            connectionLineType={ConnectionLineType.Step}
+            defaultEdgeOptions={{ 
+              type: 'step', 
+              style: { stroke: "#222" },
+              markerEnd: { type: MarkerType.ArrowClosed, color: "#222" }
+            }}
             fitView
           >
             <Controls />
@@ -374,87 +381,149 @@ function Home() {
           </ReactFlow>
         </div>
 
-        {/* Edge tipi seçici */}
+        {/* --- PRO KENAR DÜZENLEME MENÜSÜ --- */}
         {selectedEdgeId && (
           <div
             style={{
               position: "fixed",
-              bottom: 16,
+              bottom: 30, // Biraz daha yukarıdan
               left: "50%",
               transform: "translateX(-50%)",
-              background: "#fff",
-              border: "1px solid rgba(0,0,0,.15)",
-              boxShadow: "0 6px 16px rgba(0,0,0,.12)",
-              borderRadius: 8,
-              padding: "8px 10px",
+              // Yarı saydam beyaz arka plan
+              background: "rgba(255, 255, 255, 0.9)",
+              // Arka planı bulanıklaştır (Buzlu cam efekti)
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              // Daha ince ve zarif bir çerçeve
+              border: "1px solid rgba(255, 255, 255, 0.4)",
+              // Daha modern, yumuşak ve derin bir gölge
+              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04)",
+              borderRadius: 16, // Daha yuvarlak köşeler
+              padding: "10px 14px",
               zIndex: 2000,
               display: "flex",
-              gap: 8,
+              gap: 12, // Elemanlar arası boşluk
               alignItems: "center",
+              fontFamily: "'Inter', sans-serif",
             }}
           >
-            <span style={{ fontSize: 12, opacity: 0.8 }}>Bağlantı:</span>
-            <select
-              defaultValue="association"
-              onChange={(e) => {
-                const v = e.target.value as
-                  | "association"
-                  | "navigable"
-                  | "inheritance"
-                  | "realization"
-                  | "dependency"
-                  | "aggregation"
-                  | "composition"
-                  | "seq:sync"
-                  | "seq:async"
-                  | "seq:return"
-                  | "seq:create"
-                  | "seq:destroy";
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#444" }}>Bağlantı Tipi:</span>
+            
+            {/* Özel Dropdown Tasarımı */}
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <select
+                defaultValue="association"
+                onChange={(e) => {
+                  const v = e.target.value as
+                    | "association"
+                    | "navigable"
+                    | "inheritance"
+                    | "realization"
+                    | "dependency"
+                    | "aggregation"
+                    | "composition"
+                    | "seq:sync"
+                    | "seq:async"
+                    | "seq:return"
+                    | "seq:create"
+                    | "seq:destroy";
 
-                setEdges((eds) =>
-                  eds.map((edge) => {
-                    if (edge.id !== selectedEdgeId) return edge;
+                  setEdges((eds) =>
+                    eds.map((edge) => {
+                      if (edge.id !== selectedEdgeId) return edge;
 
-                    const base: Pick<Edge, "style" | "markerEnd"> = {
-                      style: { stroke: "#222" },
-                      markerEnd: undefined,
-                    };
+                      const base: Pick<Edge, "style" | "markerEnd"> = {
+                        style: { stroke: "#222" },
+                        markerEnd: undefined,
+                      };
 
-                    switch (v) {
-                      case "association": return { ...edge, ...base, type: undefined };
-                      case "navigable": return { ...edge, ...base, markerEnd: { type: MarkerType.ArrowClosed, color: "#222", width: 20, height: 20 } };
-                      case "inheritance": return { ...edge, ...base, type: "umlInheritance" as UmlEdgeKey };
-                      case "realization": return { ...edge, ...base, type: "umlRealization" as UmlEdgeKey, style: { stroke: "#222", strokeDasharray: "6 6" } };
-                      case "dependency": return { ...edge, ...base, style: { stroke: "#222", strokeDasharray: "6 6" }, markerEnd: { type: MarkerType.Arrow, color: "#222", width: 20, height: 20 } };
-                      case "aggregation": return { ...edge, ...base, type: "umlAggregation" as UmlEdgeKey };
-                      case "composition": return { ...edge, ...base, type: "umlComposition" as UmlEdgeKey };
-                      case "seq:sync": return { ...edge, ...base, type: "seqSync" as UmlEdgeKey };
-                      case "seq:async": return { ...edge, ...base, type: "seqAsync" as UmlEdgeKey };
-                      case "seq:return": return { ...edge, ...base, type: "seqReturn" as UmlEdgeKey };
-                      case "seq:create": return { ...edge, ...base, type: "seqCreate" as UmlEdgeKey };
-                      case "seq:destroy": return { ...edge, ...base, type: "seqDestroy" as UmlEdgeKey };
-                    }
-                    return edge;
-                  })
-                );
+                      switch (v) {
+                        case "association": return { ...edge, ...base, type: undefined };
+                        case "navigable": return { ...edge, ...base, markerEnd: { type: MarkerType.ArrowClosed, color: "#222", width: 20, height: 20 } };
+                        case "inheritance": return { ...edge, ...base, type: "umlInheritance" as UmlEdgeKey };
+                        case "realization": return { ...edge, ...base, type: "umlRealization" as UmlEdgeKey, style: { stroke: "#222", strokeDasharray: "6 6" } };
+                        case "dependency": return { ...edge, ...base, style: { stroke: "#222", strokeDasharray: "6 6" }, markerEnd: { type: MarkerType.Arrow, color: "#222", width: 20, height: 20 } };
+                        case "aggregation": return { ...edge, ...base, type: "umlAggregation" as UmlEdgeKey };
+                        case "composition": return { ...edge, ...base, type: "umlComposition" as UmlEdgeKey };
+                        case "seq:sync": return { ...edge, ...base, type: "seqSync" as UmlEdgeKey };
+                        case "seq:async": return { ...edge, ...base, type: "seqAsync" as UmlEdgeKey };
+                        case "seq:return": return { ...edge, ...base, type: "seqReturn" as UmlEdgeKey };
+                        case "seq:create": return { ...edge, ...base, type: "seqCreate" as UmlEdgeKey };
+                        case "seq:destroy": return { ...edge, ...base, type: "seqDestroy" as UmlEdgeKey };
+                      }
+                      return edge;
+                    })
+                  );
+                }}
+                style={{
+                  // Standart görünümü gizle
+                  appearance: "none", 
+                  WebkitAppearance: "none",
+                  // İkon için sağdan boşluk bırak
+                  padding: "8px 34px 8px 12px",
+                  borderRadius: 8,
+                  border: "1px solid #d1d5db",
+                  background: "#fff",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: "#374151",
+                  cursor: "pointer",
+                  outline: "none",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                  transition: "all 0.2s ease",
+                }}
+                // Odaklanınca mavi çerçeve (inline olarak ekliyoruz)
+                onFocus={(e) => e.currentTarget.style.borderColor = "#2563eb"}
+                onBlur={(e) => e.currentTarget.style.borderColor = "#d1d5db"}
+              >
+                <option value="association">İlişki (Association)</option>
+                <option value="navigable">Yönlendirilebilir (Navigable)</option>
+                <option value="inheritance">Kalıtım (Inheritance)</option>
+                <option value="realization">Gerçekleştirme (Realization)</option>
+                <option value="dependency">Bağımlılık (Dependency)</option>
+                <option value="aggregation">Toplama (Aggregation)</option>
+                <option value="composition">Bileşim (Composition)</option>
+                <option disabled>────────────</option>
+                <option value="seq:sync">Senkron Mesaj</option>
+                <option value="seq:async">Asenkron Mesaj</option>
+                <option value="seq:return">Dönüş Mesajı</option>
+                <option value="seq:create">Oluşturma Mesajı</option>
+                <option value="seq:destroy">Yok Etme Mesajı</option>
+              </select>
+              
+              {/* Özel Aşağı Ok İkonu (SVG) */}
+              <div style={{ position: "absolute", right: 10, pointerEvents: "none", display: "flex", color: "#6b7280" }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+
+            {/* Modern Kapat Butonu (X İkonu) */}
+            <button 
+              onClick={() => setSelectedEdgeId(null)} 
+              style={{ 
+                background: "transparent",
+                border: "none",
+                padding: 6,
+                borderRadius: "50%", // Yuvarlak buton
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#9ca3af",
+                transition: "all 0.2s",
+                marginLeft: 2
               }}
-              style={{ padding: "6px 8px" }}
+              // Üzerine gelince koyulaşsın
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.05)"; e.currentTarget.style.color = "#374151"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#9ca3af"; }}
             >
-              <option value="association">İlişki (Association)</option>
-              <option value="navigable">Yönlendirilebilir (Navigable)</option>
-              <option value="inheritance">Kalıtım (Inheritance)</option>
-              <option value="realization">Gerçekleştirme (Realization)</option>
-              <option value="dependency">Bağımlılık (Dependency)</option>
-              <option value="aggregation">Toplama (Aggregation)</option>
-              <option value="composition">Bileşim (Composition)</option>
-              <option disabled>────────────</option>
-              <option value="seq:sync">Senkron Mesaj</option>
-              <option value="seq:async">Asenkron Mesaj</option>
-              <option value="seq:return">Dönüş Mesajı</option>
-              <option value="seq:create">Oluşturma Mesajı</option>
-              <option value="seq:destroy">Yok Etme Mesajı</option>
-            </select>
-            <button onClick={() => setSelectedEdgeId(null)} style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid rgba(0,0,0,.15)", background: "#fafafa" }}>Kapat</button>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
         )}
 

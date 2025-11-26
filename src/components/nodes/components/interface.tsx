@@ -6,10 +6,8 @@ import { NodeType } from "../../../utils/home";
 
 type Props = { draggable?: boolean; inSidebar?: boolean; selected?: boolean; initialValue?: string };
 
-// DÜZELTME: Varsayılan değer "Arayüz" yapıldı
 const InterfaceNode = ({ draggable, inSidebar = false, selected = false, initialValue = "Arayüz" }: Props) => {
   const [title, setTitle] = useState(initialValue);
-  // DÜZELTME: Metot örneği Türkçeleştirildi
   const [methods, setMethods] = useState("+metot(tip): tip");
   const [edit, setEdit] = useState({ title: false, methods: false });
   const titleRef = useRef<HTMLInputElement>(null);
@@ -21,41 +19,38 @@ const InterfaceNode = ({ draggable, inSidebar = false, selected = false, initial
   };
   const close = (k: "title" | "methods") => () => setEdit(s => ({ ...s, [k]: false }));
 
+  // Ortak CSS Sınıfları: classNode (yapı) + interfaceTheme (renk)
+  const containerClass = `${style.classNode} ${style.interfaceTheme} ${inSidebar ? style.preview : ''} nodes ${NodeType.ARAYUZ}`;
+
   if (inSidebar) {
     return (
-      <div className={`nodes ${style.classNode} ${style.preview}`} draggable={draggable} style={{ background: "#e6f7ff" }}>
-        <div className={`${style.row} ${style.header}`}><span style={{ fontSize: "0.6rem" }}>&laquo;interface&raquo;</span><br/><span>{initialValue}</span></div>
+      <div className={containerClass} draggable={draggable}>
+        <div className={style.header}>
+          <div className={style.stereotype}>&laquo;interface&raquo;</div>
+          <span className={style.title}>{initialValue}</span>
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <NodeResizer isVisible={selected} color="#ff0071" minWidth={120} />
+      <NodeResizer isVisible={selected} color="#9C27B0" minWidth={140} />
       <Handle type="target" position={Position.Top} />
       
-      <div 
-        className={`nodes ${NodeType.ARAYUZ} ${style.classNode}`} 
-        draggable={draggable}
-        style={{
-          background: "#fff",
-          border: "1px solid #333",
-          boxShadow: "4px 4px 0px rgba(0,0,0,0.15)",
-          minWidth: "140px"
-        }}
-      >
-        <div className={`${style.row} ${style.header}`} onDoubleClick={open("title")} style={{ background: "#e6f7ff", borderBottom: "1px solid #333", padding: "8px 4px" }}>
-          <div className={style.stereotype} style={{ fontSize: "0.75rem", color: "#555" }}>&laquo;interface&raquo;</div>
+      <div className={containerClass} draggable={draggable}>
+        <div className={style.header} onDoubleClick={open("title")}>
+          <div className={style.stereotype}>&laquo;interface&raquo;</div>
           {edit.title ? (
-            <input ref={titleRef} className={style.input} value={title} onChange={e=>setTitle(e.target.value)} onBlur={close("title")} style={{ textAlign: "center", fontWeight: "bold", background: "transparent" }} />
+            <input ref={titleRef} className={style.input} value={title} onChange={e=>setTitle(e.target.value)} onBlur={close("title")} />
           ) : (
-            <span className={style.title} style={{ fontWeight: "bold" }}>{title}</span>
+            <span className={style.title}>{title}</span>
           )}
         </div>
         
-        <div className={style.divider} style={{ background: "#333" }} />
+        <div className={style.divider} />
         
-        <div className={style.row} onDoubleClick={open("methods")} style={{ padding: "6px" }}>
+        <div className={style.row} onDoubleClick={open("methods")}>
           {edit.methods ? (
             <textarea ref={methodsRef} className={style.textarea} value={methods} onChange={e=>setMethods(e.target.value)} onBlur={close("methods")} rows={3} />
           ) : <pre className={style.block}>{methods}</pre>}

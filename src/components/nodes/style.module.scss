@@ -1,183 +1,204 @@
+/* src/components/nodes/style.module.scss */
+
+/* --- TEMEL GENEL AYARLAR --- */
 .nodes {
   border: 0.5px solid black;
   cursor: pointer;
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   min-width: inherit;
   min-height: inherit;
   border-radius: inherit;
   background: #fff;
 
   input {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    border: none;
-    outline: none;
-    margin: 0;
-    padding: 2px;
-    font-size: 0.75rem; // daha okunur
+    width: 100%; height: 100%;
+    position: absolute; top: 0; left: 0;
+    border: none; outline: none;
+    margin: 0; padding: 2px;
+    font-size: 0.75rem;
     background: transparent;
+    text-align: center;
   }
 
   .label {
     font-size: 0.75rem;
     text-decoration: inherit;
-    padding: 2px;
-    color: #111;
+    padding: 4px;
+    color: #000;
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    text-align: center;
+    line-height: 1.2;
   }
 
-  // 🔹 Özel şekiller
-  &.dikdortgen {
-    min-width: 1.7em;
-    min-height: 1em;
-  }
+  /* Varsayılan Tipler */
+  &.dikdortgen { min-width: 1.7em; min-height: 1em; }
+  &.kare { min-width: 2em; min-height: 2em; }
+  &.daire { min-width: 2em; min-height: 2em; border-radius: 50%; }
+  &.elips { min-width: 2.5em; min-height: 1.5em; border-radius: 50%; }
+  &.yuvarlatılmış_dikdörtgen { min-width: 1.7em; min-height: 1em; border-radius: 6px; }
+  &.metin { min-width: 3em; min-height: 1.5em; border: none; background: transparent; }
+  
+  /* Sıralama Diyagramı */
+  &.aktor { min-width: 4.5em; min-height: 3.2em; background: transparent; border: none; }
+  &.lifeline { min-width: 6em; min-height: 10em; background: transparent; border: none; }
+  &.aktivasyon { min-width: .8em; min-height: 3em; background: #fff; }
+  &.note { background: #fffbe6; }
+  &.fragment { border: 2px dashed #666; background: transparent; }
 
-  &.kare {
-    min-width: 2em;
-    min-height: 2em;
+  /* Aktivite Diyagramı (Sıfırlama) */
+  &.aktivite_baslat, &.aktivite_bitis, &.aktivite_karar, &.aktivite_catal, &.aktivite_islem {
+    border: none !important; background: transparent !important; box-shadow: none !important;
   }
+}
 
-  &.daire {
-    min-width: 2em;
-    min-height: 2em;
-    border-radius: 50%;
-  }
+/* --- AKTİVİTE DİYAGRAMI: PRO STİLLERİ (Mavi Tema) --- */
+.activityNode {
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #000;
+  transition: all 0.2s ease-in-out; position: relative; box-sizing: border-box;
 
-  &.elips {
-    min-width: 2.5em;
-    min-height: 1.5em;
-    border-radius: 50%;
-  }
+  &:global(.selected) { box-shadow: 0 0 0 2px #2563eb !important; }
 
-  &.yuvarlatılmış_dikdörtgen {
-    @extend .dikdortgen;
-    border-radius: 6px;
+  &.action {
+    background: linear-gradient(to bottom, #E3F2FD, #BBDEFB);
+    border: 1.5px solid #1565C0; border-radius: 12px;
+    padding: 8px 12px; min-width: 100px; min-height: 40px;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    &.sidebarItem { min-width: 60px; min-height: 25px; border-radius: 6px; font-size: 0.6rem; padding: 2px; }
+    &:hover { box-shadow: 3px 3px 6px rgba(0,0,0,0.15); transform: translateY(-1px); }
   }
+  &.decision {
+    width: 40px; height: 40px;
+    background: linear-gradient(to bottom, #E3F2FD, #BBDEFB);
+    border: 1.5px solid #1565C0; transform: rotate(45deg);
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    &.sidebarItem { width: 24px; height: 24px; }
+    &:hover { background: #BBDEFB; }
+  }
+  &.start {
+    width: 24px; height: 24px; background: #000; border-radius: 50%;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    &.sidebarItem { width: 18px; height: 18px; }
+  }
+  &.end {
+    width: 30px; height: 30px; border-radius: 50%; background: #fff;
+    border: 2px solid #000; position: relative;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    &::after {
+      content: ""; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); width: 18px; height: 18px;
+      background: #000; border-radius: 50%;
+    }
+    &.sidebarItem { width: 24px; height: 24px; &::after { width: 14px; height: 14px; } }
+  }
+  &.fork {
+    background: #000; border-radius: 2px; width: 100%; height: 100%;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+  }
+}
 
-  &.metin {
-    min-width: 3em;
-    min-height: 1.5em;
-  }
-
-  // Örnek: özel tür
-  &.output {
-    border-color: red;
-  }
-/* —— 3 bölmeli UML Sınıf kutusu —— */
+/* --- SINIF DİYAGRAMI: PRO STİLLERİ (YENİ) --- */
 .classNode {
-  /* ÖNEMLİ: içerik kadar ölçülen kutu – canvas'a taşınca 100% olmasın */
-  width: max-content;        /* ← eskiden 100% idi: büyümenin sebebi buydu */
-  height: max-content;       /* ← eskiden 100% idi */
-  display: inline-flex;      /* içerik kadar yer kaplasın */
+  width: max-content;
+  min-width: 140px;
+  display: inline-flex;
   flex-direction: column;
+  background: #fff;
+  border: 1px solid #333;
+  box-shadow: 4px 4px 0px rgba(0,0,0,0.15); /* Sert teknik gölge */
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 
-  /* genel görünüm */
-  .row {
-    padding: 4px 6px;
-    font-size: 0.75rem;
-    line-height: 1.25;
-    color: #111;
-    white-space: pre-wrap;
-    word-break: break-word;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
   }
 
+  /* Header (Başlık) Kısmı - Türüne göre renklenecek */
   .header {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    .title { font-weight: 700; }
+    padding: 8px 6px;
+    border-bottom: 1px solid #333;
+    
+    /* Varsayılan (Sınıf) Rengi: Klasik UML Sarısı */
+    background: #FFF9C4; 
+
+    .stereotype {
+      font-size: 0.7rem;
+      color: #555;
+      font-style: italic;
+      margin-bottom: 2px;
+    }
+    .title {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #000;
+    }
+    .underlineTitle {
+      text-decoration: underline;
+      font-weight: 600;
+    }
   }
 
-  .divider { height: 1px; background: rgba(0,0,0,.4); }
-
-  .input,
-  .textarea {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
+  /* Özellik ve Metot Satırları */
+  .row {
+    padding: 6px 8px;
     font-size: 0.75rem;
-    color: #111;
-    resize: none;
+    color: #222;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.4;
+    background: #fff; /* İçerik her zaman beyaz */
   }
 
-  .block {
-    margin: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-size: 0.74rem;
+  .divider { height: 1px; background: #333; width: 100%; }
+
+  /* Inputlar */
+  .input, .textarea {
+    width: 100%; border: none; outline: none;
+    background: transparent; font-size: 0.75rem;
+    color: #111; resize: none; text-align: center;
+    font-family: inherit;
+  }
+  .textarea { text-align: left; }
+  .block { margin: 0; font-family: 'Consolas', monospace; }
+
+  /* --- TÜRLEŞTİRMELER --- */
+  
+  /* 1. ARAYÜZ (Interface) -> Mor/Eflatun Başlık */
+  &.interfaceTheme .header {
+    background: #E1BEE7; /* Açık Mor */
   }
 
-  .muted { opacity: .7; }
+  /* 2. SOYUT SINIF (Abstract) -> Gri/Gümüş Başlık */
+  &.abstractTheme .header {
+    background: #ECEFF1; /* Açık Gri */
+    .title { font-style: italic; }
+  }
+
+  /* 3. NESNE (Object) -> Turuncu/Krem Başlık */
+  &.objectTheme .header {
+    background: #FFE0B2; /* Açık Turuncu */
+  }
 }
 
-/* sinif tipi için minimum boyut (sadece gerçek node’da işe yarasın) */
-.react-flow__node .nodes.sinif {
-  min-width: 10em;
-  min-height: 6em;
-  border-radius: 4px;
-}
-
-/* Sidebar önizlemesi küçük kalsın */
+/* Sidebar Önizlemesi */
 .preview {
-  min-width: 2.8em !important;
-  min-height: 2.2em !important;
-  width: 2.8em !important;
-  height: 2.2em !important;
-
-  .row { padding: 2px 3px; font-size: 0.7rem; }
-  .divider { opacity: .6; }
+  min-width: 60px !important;
+  min-height: auto !important;
+  transform: scale(0.8);
+  transform-origin: top center;
+  box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+  margin-bottom: 5px;
+  
+  .header { padding: 4px; }
+  .row { display: none; } /* Sidebar'da detayları gizle */
+  .title { font-size: 0.7rem; }
 }
-/* ortak sınıf kutusu stilleri zaten vardı: .classNode {...} */
-
-/* Başlık varyantları */
-.stereotype { font-size: .7rem; opacity: .75; }
-.underlineTitle { text-decoration: underline; font-weight: 600; }
-
-/* Soyut başlık italik */
-.nodes.soyut_sinif .classNode .title,
-.nodes.soyut_sinif .title { font-style: italic; }
-
-/* Canvas'ta minimum boyutlar (sadece gerçek node'lara uygula) */
-.react-flow__node .nodes.sinif,
-.react-flow__node .nodes.soyut_sinif,
-.react-flow__node .nodes.arayuz,
-.react-flow__node .nodes.nesne {
-  min-width: 10em;
-  min-height: 6em;
-  border-radius: 4px;
-}
-
-/* Sidebar önizleme küçük kalsın */
-.preview { min-width: 2.8em !important; min-height: 2.2em !important; width: 2.8em !important; height: 2.2em !important; }
-
-
-}
-/* Sequence özel görünümler */
-.nodes.aktor      { min-width: 4.5em; min-height: 3.2em; background: #fff; }
-.nodes.lifeline   { min-width: 6em;   min-height: 10em;  background: #fff; }
-.nodes.aktivasyon { min-width: .8em;  min-height: 3em;   background: #fff; }
-.nodes.note       { background: #fffbe6; }
-.nodes.fragment   { border: 2px dashed #666; }
-/* src/components/nodes/style.module.scss */
-
-.nodes {
-  /* ... Mevcut kodlar (border, background vb.) ... */
-
-  /* 🔹 AKTİVİTE DİYAGRAMI İÇİN ÖZEL AYARLAR (Pro Görünüm) */
-  /* Bu şekillerin etrafındaki varsayılan kare çerçeveyi ve beyaz arka planı kaldırır */
-  &.aktivite_baslat,
-  &.aktivite_bitis,
-  &.aktivite_karar,
-  &.aktivite_catal,
-  &.aktivite_islem {
-    border: none !important;       /* Kenarlığı zorla kaldır */
-    background: transparent !important; /* Arka planı şeffaf yap */
-    box-shadow: none !important;   /* Varsa gölgeyi kaldır (şeklin kendi gölgesi hariç) */
-  }
-}
-

@@ -1,13 +1,31 @@
-// src/components/nodes/CustomNodes.tsx
 import { useCallback, useContext } from "react";
 import type { DragEvent, TouchEvent } from "react";
 import { EventHandler, NodeType } from "../../utils/home";
-import Node from "./node";
 import { Context } from "../../store";
+
+// Varsayılan Generic Düğüm
+import Node from "./node";
+
+// 🔹 AKTİVİTE DİYAGRAMI (Özel Bileşenleri İçe Aktar)
+import StartNode from "./components/activity/StartNode";
+import EndNode from "./components/activity/EndNode";
+import ActionNode from "./components/activity/ActionNode";
+import DecisionNode from "./components/activity/DecisionNode";
+import ForkNode from "./components/activity/ForkNode";
+
+// 🔹 DİĞER DİYAGRAMLAR (İsteğe Bağlı - Sidebar'ın düzgün görünmesi için)
+import ClassNode from "./components/class";
+import AbstractClassNode from "./components/abstractClass";
+import InterfaceNode from "./components/interface";
+import ObjectNode from "./components/object";
+import ActorNode from "./components/sequence/ActorNode";
+import LifelineNode from "./components/sequence/LifelineNode";
+import ActivationNode from "./components/sequence/ActivationNode";
+import NoteNode from "./components/sequence/NoteNode";
+import FragmentNode from "./components/sequence/FragmentNode";
 
 type Props = {
   data: {
-    // NodeType string karşılığı (örn: "dikdörtgen", "daire", vb.)
     type: string;
   };
   onDragStart?: React.DragEventHandler<HTMLDivElement>;
@@ -23,7 +41,7 @@ const CustomNodes = ({ data, ...rest }: Props) => {
   const { type = NodeType.DIKDORTGEN } = data as { type: NodeType | string };
   const { dispatch } = useContext(Context);
 
-  // Varsayılan drag görselini (saydam küçük kare) kaldırmak için şeffaf 1x1 px GIF
+  // Sürükleme görselini temizle
   const removeGhostImage = useCallback((event: DragEvent<HTMLDivElement>) => {
     const img = new Image();
     img.src =
@@ -38,11 +56,6 @@ const CustomNodes = ({ data, ...rest }: Props) => {
     return null;
   }, []);
 
-  /**
-   * Fare veya dokunma için "ghost" önizleme elemanı oluşturur.
-   * - Mouse: hedef elementi klonlayıp body'e ekler.
-   * - Touch: hedef elementi klonlayıp parmak konumuna yerleştirir.
-   */
   const ghostElement = useCallback(
     (
       event: DragEvent<HTMLElement> | TouchEvent<HTMLElement>,
@@ -84,21 +97,12 @@ const CustomNodes = ({ data, ...rest }: Props) => {
 
   const onDragStart = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
-      // Varsayılan küçük drag görselini temizle
       removeGhostImage(event);
-
-      // Özel "ghost" görseli üret
       const element = ghostElement(event);
       if (!element) return;
 
-      // @xyflow/react sürükle-bırak MIME tipini kullanmak istersen aç:
-      // event.dataTransfer.setData("application/reactflow", String(data?.type));
-      // event.dataTransfer.effectAllowed = "move";
-
-      // Oluşturduğumuz elemanı sürükleme görseli olarak ata
       event.dataTransfer.setDragImage(element, 0, 0);
 
-      // Mevcut node tipini global state'e yaz
       dispatch({
         type: "change-type",
         payload: { currentType: data?.type },
@@ -119,13 +123,17 @@ const CustomNodes = ({ data, ...rest }: Props) => {
   );
 
   const onDragEnd = useCallback(() => {
-    const element = document.querySelector<HTMLElement>(`.${GHOST_ELEMENT_CLASS}`);
+    const element = document.querySelector<HTMLElement>(
+      `.${GHOST_ELEMENT_CLASS}`
+    );
     if (element) element.remove();
   }, []);
 
   const onTouchMove = useCallback((event: TouchEvent<HTMLElement>) => {
     const [touch] = Array.from(event.changedTouches);
-    const element = document.querySelector<HTMLElement>(`.${GHOST_ELEMENT_CLASS}`);
+    const element = document.querySelector<HTMLElement>(
+      `.${GHOST_ELEMENT_CLASS}`
+    );
     if (element) {
       element.style.top = `${touch.clientY}px`;
       element.style.left = `${touch.clientX}px`;
@@ -135,11 +143,53 @@ const CustomNodes = ({ data, ...rest }: Props) => {
   const onTouchEnd = useCallback(
     (event: TouchEvent<HTMLElement>) => {
       onDragEnd();
-      // Tuval tarafında "bırakma" işlemini dinleyenler için olay yayınla
       EventHandler.emit("onTouchEnd", event);
     },
     [onDragEnd]
   );
+
+  // 🔹 BURASI ÖNEMLİ: Hangi tip node isteniyorsa onun GERÇEK bileşenini döndür
+  const renderSpecificNode = () => {
+    switch (type) {
+      // --- Aktivite Diyagramı (Pro Görünüm) ---
+      case NodeType.AKTIVITE_BASLAT:
+        return <StartNode {...rest} inSidebar />;
+      case NodeType.AKTIVITE_BITIS:
+        return <EndNode {...rest} inSidebar />;
+      case NodeType.AKTIVITE_ISLEM:
+        return <ActionNode {...rest} inSidebar />;
+      case NodeType.AKTIVITE_KARAR:
+        return <DecisionNode {...rest} inSidebar />;
+      case NodeType.AKTIVITE_CATAL:
+        return <ForkNode {...rest} inSidebar />;
+
+      // --- Sınıf Diyagramı ---
+      case NodeType.SINIF:
+        return <ClassNode data={{ type }} {...rest} inSidebar />;
+      case NodeType.SOYUT_SINIF:
+        return <AbstractClassNode {...rest} inSidebar />;
+      case NodeType.ARAYUZ:
+        return <InterfaceNode {...rest} inSidebar />;
+      case NodeType.NESNE:
+        return <ObjectNode data={{ type }} {...rest} inSidebar />;
+
+      // --- Sıralama Diyagramı ---
+      case NodeType.AKTOR:
+        return <ActorNode {...rest} inSidebar />;
+      case NodeType.LIFELINE:
+        return <LifelineNode {...rest} inSidebar />;
+      case NodeType.AKTIVASYON:
+        return <ActivationNode {...rest} inSidebar />;
+      case NodeType.NOTE:
+        return <NoteNode {...rest} inSidebar />;
+      case NodeType.FRAGMENT:
+        return <FragmentNode {...rest} inSidebar />;
+
+      // --- Varsayılan ---
+      default:
+        return <Node nodeType={type as NodeType} {...rest} />;
+    }
+  };
 
   return (
     <div
@@ -148,8 +198,15 @@ const CustomNodes = ({ data, ...rest }: Props) => {
       onTouchMove={onTouchMove}
       onDragEnd={onDragEnd}
       onTouchEnd={onTouchEnd}
+      // Sidebar'da ortalamayı garantiye al
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+      }}
     >
-      <Node nodeType={type as NodeType} {...rest} />
+      {renderSpecificNode()}
     </div>
   );
 };

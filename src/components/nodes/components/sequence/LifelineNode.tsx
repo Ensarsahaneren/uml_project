@@ -23,28 +23,35 @@ export default function LifelineNode({
     inputRef.current?.focus();
   };
 
-  // Bağlantı noktaları (Handle) için stil
   const handleStyle = { left: "50%", transform: "translateX(-50%)", opacity: 0, width: 10, height: 10, background: "red" };
 
   return (
     <>
-      {/* minHeight ekleyerek çok küçülmesini engelliyoruz */}
-      <NodeResizer isVisible={selected} color="#ff0071" minHeight={100} handleStyle={{ padding: "2px" }} lineStyle={{ padding: "3px" }} />
+      {/* GÜNCELLEME 1: NodeResizer eklendi. 
+          isVisible={selected} -> Sadece seçiliyken tutamaçlar görünür.
+          minHeight={50} -> Kutunun çok küçülmesini engeller.
+      */}
+      <NodeResizer 
+        color="#2563eb" 
+        isVisible={selected} 
+        minHeight={60} 
+        minWidth={60}
+        // Sadece dikey (vertical) boyutlandırmaya izin vermek isterseniz keepAspectRatio vb. ayarlar yerine 
+        // kullanıcıya sadece alt tutamacı kullanmasını görsel olarak önerebiliriz ama ReactFlow varsayılanı her yöne izin verir.
+      />
       
       {!inSidebar && (
         <>
-          {/* Üst bağlantı noktası */}
           <Handle type="target" position={Position.Top} style={{ ...handleStyle, top: 0 }} />
           
-          {/* Dikeyde çoklu bağlantı noktaları */}
-          {[20, 40, 60, 80].map((top, i) => (
+          {/* Lifeline boyunca bağlantı noktaları (dinamik yükseklik için % ile yerleşim) */}
+          {[10, 30, 50, 70, 90].map((top, i) => (
             <div key={i}>
               <Handle type="source" position={Position.Right} id={`r-${i}`} style={{ ...handleStyle, top: `${top}%` }} />
               <Handle type="target" position={Position.Left} id={`l-${i}`} style={{ ...handleStyle, top: `${top}%` }} />
             </div>
           ))}
 
-          {/* Alt bağlantı noktası */}
           <Handle type="source" position={Position.Bottom} id="bot" style={{ ...handleStyle, bottom: 0, top: "auto" }} />
         </>
       )}
@@ -54,10 +61,15 @@ export default function LifelineNode({
         draggable={draggable} 
         onDoubleClick={onDouble}
         style={{ 
-          height: "100%",          // DÜZELTME 1: Ana kapsayıcı %100 yükseklik almalı
-          display: "flex",         // DÜZELTME 2: Flexbox kullanımı
-          flexDirection: "column", // DÜZELTME 3: Dikey yerleşim
-          minHeight: "100px",
+          // GÜNCELLEME 2: height: "100%" çok önemli. 
+          // Resize ettiğimizde ReactFlow bu div'in dış kapsayıcısının yüksekliğini değiştirir.
+          // Bu div de o yüksekliğe uymalıdır.
+          height: "100%", 
+          display: "flex", 
+          flexDirection: "column",
+          
+          // Sidebar'da küçük, sahnede varsayılan 200px başlasın
+          minHeight: inSidebar ? "40px" : "200px", 
           background: "transparent", 
           border: "none",
           boxShadow: "none"
@@ -65,16 +77,19 @@ export default function LifelineNode({
       >
         {/* Başlık Kutusu */}
         <div style={{ 
-          border: "1px solid #222", 
-          padding: "4px 8px", 
-          margin: "4px auto", 
+          border: "1.5px solid #222", 
+          padding: inSidebar ? "2px 4px" : "4px 8px", 
+          margin: "0 auto", 
+          // Çizgi ile kutu arasındaki boşluğu sıfırladık
+          marginBottom: 0, 
           borderRadius: 4, 
           background: "#fff", 
-          flexShrink: 0,         // DÜZELTME 4: Başlık kutusu sıkışmasın
+          flexShrink: 0, // Başlık kutusu ezilmesin
           position: "relative",
           zIndex: 2,
-          minWidth: "60px",
-          textAlign: "center"
+          minWidth: inSidebar ? "40px" : "80px",
+          textAlign: "center",
+          fontWeight: 600
         }}>
           {editing ? (
             <input
@@ -84,18 +99,22 @@ export default function LifelineNode({
               onChange={(e) => setLabel(e.target.value)}
               onBlur={() => setEditing(false)}
               onMouseDown={(e) => e.stopPropagation()}
+              style={{ textAlign: "center" }}
             />
           ) : (
-            <span className={style.label}>{label}</span>
+            <span className={style.label} style={{ fontSize: inSidebar ? "0.6rem" : "0.8rem" }}>{label}</span>
           )}
         </div>
         
-        {/* Kesikli Çizgi */}
+        {/* Kesikli Çizgi (Uzatılabilir Alan) */}
         <div style={{ 
           width: 0, 
-          flexGrow: 1,                   // DÜZELTME 5: Kalan tüm boşluğu doldur (Uzama efekti)
-          borderLeft: "2px dashed #666", 
+          // Flex-grow: 1 sayesinde kalan tüm boşluğu bu çizgi dolduracak.
+          // Kapsayıcıyı resize ile uzattıkça bu çizgi uzayacak.
+          flexGrow: 1, 
+          borderLeft: "2px dashed #333", // Daha belirgin kesikli çizgi
           margin: "0 auto", 
+          marginTop: "-1px", // Görsel kopukluğu önlemek için 1px yukarı kaydırma
           zIndex: 1
         }} />
       </div>

@@ -27,23 +27,15 @@ export default function NoteNode({
     <>
       <NodeResizer isVisible={selected} color="#ff0071" handleStyle={{ padding: "2px" }} lineStyle={{ padding: "3px" }} />
       
-      {!inSidebar && (
-        <>
-          <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
-          <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
-          <Handle type="source" position={Position.Left} style={{ opacity: 0 }} />
-          <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
-        </>
-      )}
+      {!inSidebar && <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />}
 
       <div 
         className={`nodes ${NodeType.NOTE}`} 
         onDoubleClick={onDouble} 
         draggable={draggable} 
-        // DÜZELTME: Ana kapsayıcıyı şeffaf ve çerçevesiz yapıyoruz
         style={{ 
-          height: "100%", 
-          width: "100%", 
+          height: inSidebar ? "30px" : "100%", 
+          width: inSidebar ? "40px" : "100%", 
           background: "transparent", 
           border: "none", 
           boxShadow: "none" 
@@ -52,30 +44,27 @@ export default function NoteNode({
         <div style={{ 
             position: "relative", 
             border: "1px solid #222", 
-            background: "#fffbe6", // Not kağıdı rengi (Sarı)
+            background: "#fffbe6", 
             height: "100%", 
             width: "100%",
-            padding: 8,
+            padding: inSidebar ? 2 : 8,
             boxSizing: "border-box",
-            boxShadow: "2px 2px 5px rgba(0,0,0,0.1)" // Hafif gölge eklendi (Daha Pro durur)
+            boxShadow: "2px 2px 5px rgba(0,0,0,0.1)"
           }}>
-          {/* Kıvrık Köşe Efekti */}
+          {/* Köşe Kıvrımı */}
           <div
             style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              width: 0,
-              height: 0,
+              position: "absolute", top: 0, right: 0, width: 0, height: 0,
               borderStyle: "solid",
-              borderWidth: "0 15px 15px 0",
+              borderWidth: inSidebar ? "0 8px 8px 0" : "0 15px 15px 0",
               borderColor: "transparent #fff transparent transparent",
               boxShadow: "-1px 1px 2px rgba(0,0,0,0.1)",
               zIndex: 2
             }}
           />
           <div style={{
-              position: "absolute", top: 0, right: 0, width: 15, height: 15,
+              position: "absolute", top: 0, right: 0, 
+              width: inSidebar ? 8 : 15, height: inSidebar ? 8 : 15,
               background: "linear-gradient(45deg, #ddd 50%, #fff 50%)" 
           }}/>
 
@@ -91,7 +80,12 @@ export default function NoteNode({
               onMouseDown={(e) => e.stopPropagation()}
             />
           ) : (
-            <div className={style.block} style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: "0.8rem" }}>
+            <div className={style.block} style={{ 
+              whiteSpace: "pre-wrap", 
+              wordBreak: "break-word", 
+              fontSize: inSidebar ? "0.5rem" : "0.8rem",
+              display: "flex", alignItems: "center", justifyContent: "center", height: "100%"
+            }}>
               {text}
             </div>
           )}

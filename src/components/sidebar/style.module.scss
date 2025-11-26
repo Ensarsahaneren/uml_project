@@ -1,5 +1,6 @@
 @use "../../styles/color.scss" as color;
 
+/* Sol Menüyü Açma Butonu */
 .openSideNav {
   position: fixed;
   top: 10%;
@@ -11,10 +12,10 @@
   justify-content: center;
 
   background-color: color.$sidebar;
-  color: color.$onSidebar; // color.scss içinde varsa; yoksa varsayılan kalır
+  color: color.$onSidebar; 
   border-radius: 10px;
-  padding: 6px;              // tıklanabilir alan
-  margin-left: 4px;          // ekran kenarına yapışmasın
+  padding: 6px;              
+  margin-left: 4px;          
   cursor: pointer;
 
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
@@ -31,9 +32,10 @@
   }
 }
 
+/* Sidebar Ana Kapsayıcı */
 .sidebar_wrapper {
-   position: fixed;
-  /* AppBar'ın altından başlasın (var yoksa 48px fallback) */
+  position: fixed;
+  /* TopBar yüksekliği kadar aşağıdan başla (yoksa 48px) */
   top: var(--topbar-h, 48px);
   left: 0;
   bottom: 0;
@@ -47,16 +49,19 @@
      
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
 
-  transform: translateX(0);    // açık
+  transform: translateX(0);    
   transition: transform .22s ease-out;
   will-change: transform;
+  
+  /* İçerik taşarsa kaydırma çubuğu çıksın */
+  overflow-y: auto;
 
   &.hidden {
     transform: translateX(-100%);
     pointer-events: none;
   }
 
-
+  /* Üst Kısım Açıklama ve Kapat Butonu */
   .description {
     font-size: 0.9rem;
     line-height: 1.35;
@@ -81,26 +86,35 @@
     }
   }
 
+  /* --- DÜĞÜMLERİN LİSTELENDİĞİ IZGARA (GRID) --- */
   .sidebar__nodes {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    place-items: center;
-    grid-auto-rows: 30px;
+    
+    /* 1. DEĞİŞİKLİK: 4 sütun yerine 3 sütun (Geniş şekiller sığsın diye) */
+    grid-template-columns: repeat(3, 1fr);
+    
+    /* 2. DEĞİŞİKLİK: Dikey boşluk artırıldı (25px) */
+    gap: 25px 5px;
+    
+    /* 3. DEĞİŞİKLİK: Hizalama (Dikey: Üst, Yatay: Orta) */
+    place-items: start center;
+    
+    /* 4. DEĞİŞİKLİK: Satır yüksekliği serbest (Şekil ne kadarsa o kadar) */
+    grid-auto-rows: auto;
 
-    padding: 0 10px 12px;
+    padding: 15px 10px 20px;
 
-    /* Daha küçük ekranlarda 3 sütun */
+    /* Daha küçük ekranlarda yine 3 sütun kalabilir */
     @media (max-width: 1200px) {
       grid-template-columns: repeat(3, 1fr);
     }
-    /* Çok küçük ekranlarda 2 sütun */
+    /* Çok küçük ekranlarda 2 sütuna düş */
     @media (max-width: 640px) {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  /* Yumuşak scrollbar (isteğe bağlı) */
+  /* Scrollbar Tasarımı */
   &::-webkit-scrollbar { width: 10px; }
   &::-webkit-scrollbar-thumb {
     background: rgba(0,0,0,.15);
@@ -108,7 +122,7 @@
   }
 }
 
-/* Mobil: kapanma ikonu görünür olsun */
+/* Mobil Uyumluluk: Kapanma ikonu görünür olsun */
 @media (max-width: 800px) {
   .sidebar_wrapper {
     .description {
@@ -120,7 +134,7 @@
   }
 }
 
-/* Hareketi azalt tercihine saygı */
+/* Animasyonları Azalt Tercihi */
 @media (prefers-reduced-motion: reduce) {
   .openSideNav,
   .sidebar_wrapper {

@@ -9,22 +9,14 @@ export default function ActivationNode({ draggable, inSidebar = false, selected 
       <NodeResizer isVisible={selected} color="#ff0071" minHeight={30} handleStyle={{ padding: "2px" }} lineStyle={{ padding: "3px" }} />
       
       {!inSidebar && <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />}
-
+      
+      {/* Handles (Kısaltıldı) */}
       {!inSidebar && (
         <>
           <Handle type="source" position={Position.Left} id="left" style={{ top: "20%", opacity: 0 }} />
           <Handle type="target" position={Position.Left} id="left-t" style={{ top: "20%", opacity: 0 }} />
-          <Handle type="source" position={Position.Left} id="left-2" style={{ top: "50%", opacity: 0 }} />
-          <Handle type="target" position={Position.Left} id="left-t2" style={{ top: "50%", opacity: 0 }} />
-          <Handle type="source" position={Position.Left} id="left-3" style={{ top: "80%", opacity: 0 }} />
-          <Handle type="target" position={Position.Left} id="left-t3" style={{ top: "80%", opacity: 0 }} />
-          
           <Handle type="source" position={Position.Right} id="right" style={{ top: "20%", opacity: 0 }} />
           <Handle type="target" position={Position.Right} id="right-t" style={{ top: "20%", opacity: 0 }} />
-          <Handle type="source" position={Position.Right} id="right-2" style={{ top: "50%", opacity: 0 }} />
-          <Handle type="target" position={Position.Right} id="right-t2" style={{ top: "50%", opacity: 0 }} />
-          <Handle type="source" position={Position.Right} id="right-3" style={{ top: "80%", opacity: 0 }} />
-          <Handle type="target" position={Position.Right} id="right-t3" style={{ top: "80%", opacity: 0 }} />
         </>
       )}
 
@@ -34,12 +26,13 @@ export default function ActivationNode({ draggable, inSidebar = false, selected 
         style={{ 
           width: 12, 
           minWidth: 12, 
-          background: "#89CFF0", // Görseldeki gibi açık mavi
+          background: "#89CFF0",
           border: "1px solid #444", 
-          minHeight: 40, 
+          // Sidebar'da sabit 30px boy, tuvalde %100
+          height: inSidebar ? "30px" : "100%", 
+          minHeight: inSidebar ? "30px" : "40px",
           margin: "0 auto", 
-          height: "100%", 
-          boxShadow: "2px 2px 4px rgba(0,0,0,0.1)", // Hafif derinlik
+          boxShadow: "2px 2px 4px rgba(0,0,0,0.1)",
           borderRadius: 0
         }}
         title="Aktivasyon (İşlem) Çubuğu"
