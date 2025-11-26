@@ -44,12 +44,16 @@ import AbstractClassNode from "../components/nodes/components/abstractClass";
 
 import ActorNode from "../components/nodes/components/sequence/ActorNode";
 import LifelineNode from "../components/nodes/components/sequence/LifelineNode";
-
 import ActivationNode from "../components/nodes/components/sequence/ActivationNode";
 import NoteNode from "../components/nodes/components/sequence/NoteNode";
 import FragmentNode from "../components/nodes/components/sequence/FragmentNode";
 
-
+// 🔹 YENİ EKLENEN IMPORTLAR (Aktivite Diyagramı)
+import StartNode from "../components/nodes/components/activity/StartNode";
+import EndNode from "../components/nodes/components/activity/EndNode";
+import ActionNode from "../components/nodes/components/activity/ActionNode";
+import DecisionNode from "../components/nodes/components/activity/DecisionNode";
+import ForkNode from "../components/nodes/components/activity/ForkNode";
 
 import StylePanel from "../components/stylePanel";
 import DownloadComponent from "../components/download";
@@ -84,12 +88,19 @@ const nodeTypes = {
   [NodeType.ARAYUZ]: InterfaceNode,
   [NodeType.NESNE]: ObjectNode,
 
-    // 🔹 Sequence
+  // 🔹 Sequence
   [NodeType.AKTOR]: ActorNode,
   [NodeType.LIFELINE]: LifelineNode,
   [NodeType.AKTIVASYON]: ActivationNode,
   [NodeType.NOTE]: NoteNode,
   [NodeType.FRAGMENT]: FragmentNode,
+
+  // 🔹 Aktivite Diyagramı
+  [NodeType.AKTIVITE_BASLAT]: StartNode,
+  [NodeType.AKTIVITE_BITIS]: EndNode,
+  [NodeType.AKTIVITE_ISLEM]: ActionNode,
+  [NodeType.AKTIVITE_KARAR]: DecisionNode,
+  [NodeType.AKTIVITE_CATAL]: ForkNode,
 } as const;
 
 /* ---------- Edge tipleri ---------- */
@@ -119,6 +130,8 @@ function defaultLabel(type: NodeType): string {
       return "Not";
     case NodeType.FRAGMENT:
       return "loop";
+    case NodeType.AKTIVITE_ISLEM:
+      return "İşlem";
     default:
       return "Metin";
   }
@@ -155,7 +168,6 @@ function Home() {
     [setEdges]
   );
 
-  /* ---- DnD: drag over ---- */
   const onDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -172,21 +184,38 @@ function Home() {
         y: clientY,
       });
 
-   const id = NodeObject.getId();
-const newNode: PropertiesType = {
-  id,
-  type: type as NodeType,
-  position,
-  data: {
-    type: type as NodeType | string,
-    label: defaultLabel(type as NodeType),
-  } satisfies { type: NodeType | string; label?: string },
-  style: {
-    background: "#ffffff",
-    ...calculateStyle(type as NodeType),
-  },
-};
+      const id = NodeObject.getId();
 
+      // Arka planı şeffaf olacak düğümler
+      const transparentNodes: string[] = [
+        NodeType.AKTOR,
+        NodeType.LIFELINE,
+        NodeType.FRAGMENT,
+        NodeType.NOTE,
+        NodeType.AKTIVASYON,
+        // Aktivite diyagramı elemanları (Kendi iç stilleri var)
+        NodeType.AKTIVITE_BASLAT,
+        NodeType.AKTIVITE_BITIS,
+        NodeType.AKTIVITE_KARAR,
+        NodeType.AKTIVITE_CATAL,
+        NodeType.AKTIVITE_ISLEM
+      ];
+      
+      const bgColor = transparentNodes.includes(type) ? "transparent" : "#ffffff";
+
+      const newNode: PropertiesType = {
+        id,
+        type: type as NodeType,
+        position,
+        data: {
+          type: type as NodeType | string,
+          label: defaultLabel(type as NodeType),
+        } satisfies { type: NodeType | string; label?: string },
+        style: {
+          background: bgColor,
+          ...calculateStyle(type as NodeType),
+        },
+      };
 
       dispatch({ type: "add", payload: newNode });
       setNodes((nds) => nds.concat(newNode as unknown as Node));
@@ -202,17 +231,14 @@ const newNode: PropertiesType = {
     [handleDrop]
   );
 
-  /* ---- Seçim (stil paneli) ---- */
   const handleNodeClick: NodeMouseHandler = (_, node) => {
     dispatch({ type: "selectedNode", payload: { id: node.id } });
   };
 
-  /* ---- Edge seçimi ---- */
   const onEdgeClick = useCallback((_e: React.MouseEvent, edge: Edge) => {
     setSelectedEdgeId(edge.id);
   }, []);
 
-  /* ---- Dokunmatik bırakma ---- */
   const onTouchEnd = useCallback(
     (event: TouchEvent<HTMLDivElement>) => {
       event.preventDefault();
@@ -222,7 +248,6 @@ const newNode: PropertiesType = {
     [handleDrop]
   );
 
-  /* ---- StylePanel → sahneye uygula ---- */
   useEffect(() => {
     const applyStyle = () => {
       const id = state.selectedNodeId;
@@ -320,7 +345,6 @@ const newNode: PropertiesType = {
     };
   }, [nodes, edges, setNodes, setEdges]);
 
-  /* ---- Render ---- */
   return (
     <div className="App">
       <TopBar />
@@ -397,63 +421,20 @@ const newNode: PropertiesType = {
                     };
 
                     switch (v) {
-                      case "association":
-                        return { ...edge, ...base, type: undefined };
-
-                      case "navigable":
-                        return {
-                          ...edge,
-                          ...base,
-                          markerEnd: {
-                            type: MarkerType.ArrowClosed,
-                            color: "#222",
-                            width: 20,
-                            height: 20,
-                          },
-                        };
-
-                      case "inheritance":
-                        return { ...edge, ...base, type: "umlInheritance" as UmlEdgeKey };
-
-                      case "realization":
-                        return {
-                          ...edge,
-                          ...base,
-                          type: "umlRealization" as UmlEdgeKey,
-                          style: { stroke: "#222", strokeDasharray: "6 6" },
-                        };
-
-                      case "dependency":
-                        return {
-                          ...edge,
-                          ...base,
-                          style: { stroke: "#222", strokeDasharray: "6 6" },
-                          markerEnd: {
-                            type: MarkerType.Arrow,
-                            color: "#222",
-                            width: 20,
-                            height: 20,
-                          },
-                        };
-
-                      case "aggregation":
-                        return { ...edge, ...base, type: "umlAggregation" as UmlEdgeKey };
-
-                      case "composition":
-                        return { ...edge, ...base, type: "umlComposition" as UmlEdgeKey };
-
-                      /* Sequence mesajları */
-                      case "seq:sync":
-                        return { ...edge, ...base, type: "seqSync" as UmlEdgeKey };
-                      case "seq:async":
-                        return { ...edge, ...base, type: "seqAsync" as UmlEdgeKey };
-                      case "seq:return":
-                        return { ...edge, ...base, type: "seqReturn" as UmlEdgeKey };
-                      case "seq:create":
-                        return { ...edge, ...base, type: "seqCreate" as UmlEdgeKey };
-                      case "seq:destroy":
-                        return { ...edge, ...base, type: "seqDestroy" as UmlEdgeKey };
+                      case "association": return { ...edge, ...base, type: undefined };
+                      case "navigable": return { ...edge, ...base, markerEnd: { type: MarkerType.ArrowClosed, color: "#222", width: 20, height: 20 } };
+                      case "inheritance": return { ...edge, ...base, type: "umlInheritance" as UmlEdgeKey };
+                      case "realization": return { ...edge, ...base, type: "umlRealization" as UmlEdgeKey, style: { stroke: "#222", strokeDasharray: "6 6" } };
+                      case "dependency": return { ...edge, ...base, style: { stroke: "#222", strokeDasharray: "6 6" }, markerEnd: { type: MarkerType.Arrow, color: "#222", width: 20, height: 20 } };
+                      case "aggregation": return { ...edge, ...base, type: "umlAggregation" as UmlEdgeKey };
+                      case "composition": return { ...edge, ...base, type: "umlComposition" as UmlEdgeKey };
+                      case "seq:sync": return { ...edge, ...base, type: "seqSync" as UmlEdgeKey };
+                      case "seq:async": return { ...edge, ...base, type: "seqAsync" as UmlEdgeKey };
+                      case "seq:return": return { ...edge, ...base, type: "seqReturn" as UmlEdgeKey };
+                      case "seq:create": return { ...edge, ...base, type: "seqCreate" as UmlEdgeKey };
+                      case "seq:destroy": return { ...edge, ...base, type: "seqDestroy" as UmlEdgeKey };
                     }
+                    return edge;
                   })
                 );
               }}
@@ -466,7 +447,6 @@ const newNode: PropertiesType = {
               <option value="dependency">Bağımlılık (Dependency)</option>
               <option value="aggregation">Toplama (Aggregation)</option>
               <option value="composition">Bileşim (Composition)</option>
-
               <option disabled>────────────</option>
               <option value="seq:sync">Senkron Mesaj</option>
               <option value="seq:async">Asenkron Mesaj</option>
@@ -474,18 +454,7 @@ const newNode: PropertiesType = {
               <option value="seq:create">Oluşturma Mesajı</option>
               <option value="seq:destroy">Yok Etme Mesajı</option>
             </select>
-
-            <button
-              onClick={() => setSelectedEdgeId(null)}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 6,
-                border: "1px solid rgba(0,0,0,.15)",
-                background: "#fafafa",
-              }}
-            >
-              Kapat
-            </button>
+            <button onClick={() => setSelectedEdgeId(null)} style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid rgba(0,0,0,.15)", background: "#fafafa" }}>Kapat</button>
           </div>
         )}
 

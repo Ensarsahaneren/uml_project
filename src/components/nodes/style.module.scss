@@ -163,4 +163,21 @@
 .nodes.aktivasyon { min-width: .8em;  min-height: 3em;   background: #fff; }
 .nodes.note       { background: #fffbe6; }
 .nodes.fragment   { border: 2px dashed #666; }
+/* src/components/nodes/style.module.scss */
+
+.nodes {
+  /* ... Mevcut kodlar (border, background vb.) ... */
+
+  /* 🔹 AKTİVİTE DİYAGRAMI İÇİN ÖZEL AYARLAR (Pro Görünüm) */
+  /* Bu şekillerin etrafındaki varsayılan kare çerçeveyi ve beyaz arka planı kaldırır */
+  &.aktivite_baslat,
+  &.aktivite_bitis,
+  &.aktivite_karar,
+  &.aktivite_catal,
+  &.aktivite_islem {
+    border: none !important;       /* Kenarlığı zorla kaldır */
+    background: transparent !important; /* Arka planı şeffaf yap */
+    box-shadow: none !important;   /* Varsa gölgeyi kaldır (şeklin kendi gölgesi hariç) */
+  }
+}
 

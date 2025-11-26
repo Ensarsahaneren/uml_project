@@ -23,11 +23,23 @@ const BASIC_NODES = [
   NodeType.METIN,
 ] as const;
 
+// Sidebar elemanlarını saran yardımcı bileşen (Label eklemek için)
+const SidebarItem = ({ label, children }: { label: string, children: React.ReactNode }) => (
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "5px", marginBottom: "10px" }}>
+    {children}
+    <span style={{ fontSize: "0.7rem", color: "#555" }}>{label}</span>
+  </div>
+);
+
 const Sidebar = () => {
-  const [expanded, setExpanded] = useState(1);
+  // Varsayılan olarak ilk menü (Şekiller) açık gelsin
+  const [expanded, setExpanded] = useState<number | false>(1);
   const { isHidden, toggleHidden } = useToggleElement();
 
-  const handleChange = (id: number) => setExpanded(id);
+  // Akordeon açma/kapama mantığı
+  const handleChange = (panel: number) => (_: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false);
+  };
 
   return (
     <>
@@ -45,7 +57,7 @@ const Sidebar = () => {
         </div>
 
         {/* 1) Şekiller */}
-        <Accordion expanded={expanded === 1} onChange={() => handleChange(1)}>
+        <Accordion expanded={expanded === 1} onChange={handleChange(1)}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="genel" id="genel">
             <Typography>Şekiller</Typography>
           </AccordionSummary>
@@ -63,10 +75,7 @@ const Sidebar = () => {
         </Accordion>
 
         {/* 2) Sınıf Diyagramı */}
-        <Accordion
-          expanded={expanded === 2}
-          onChange={(_, isExpanded) => setExpanded(isExpanded ? 2 : 0)}
-        >
+        <Accordion expanded={expanded === 2} onChange={handleChange(2)}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="class-diagram"
@@ -77,17 +86,14 @@ const Sidebar = () => {
 
           <AccordionDetails className={style?.sidebar__nodes}>
             <CustomNodes key="sinif"        data={{ type: NodeType.SINIF }}        draggable inSidebar initialValue="Sınıf" />
-            <CustomNodes key="soyut_sinif"  data={{ type: NodeType.SOYUT_SINIF }}  draggable inSidebar initialValue="AbstractClass" />
-            <CustomNodes key="arayuz"       data={{ type: NodeType.ARAYUZ }}       draggable inSidebar initialValue="Name" />
-            <CustomNodes key="nesne"        data={{ type: NodeType.NESNE }}        draggable inSidebar initialValue="Object" />
+            <CustomNodes key="soyut_sinif"  data={{ type: NodeType.SOYUT_SINIF }}  draggable inSidebar initialValue="Soyut Sınıf" />
+            <CustomNodes key="arayuz"       data={{ type: NodeType.ARAYUZ }}       draggable inSidebar initialValue="Arayüz" />
+            <CustomNodes key="nesne"        data={{ type: NodeType.NESNE }}        draggable inSidebar initialValue="Nesne" />
           </AccordionDetails>
         </Accordion>
 
         {/* 3) Sıralama (Sequence) Diyagramı */}
-        <Accordion
-          expanded={expanded === 3}
-          onChange={(_, isExpanded) => setExpanded(isExpanded ? 3 : 0)}
-        >
+        <Accordion expanded={expanded === 3} onChange={handleChange(3)}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="sequence-diagram"
@@ -104,6 +110,42 @@ const Sidebar = () => {
             <CustomNodes key="fragment"    data={{ type: NodeType.FRAGMENT }}    draggable inSidebar initialValue="loop" />
           </AccordionDetails>
         </Accordion>
+
+        {/* 4) Aktivite Diyagramı */}
+        <Accordion expanded={expanded === 4} onChange={handleChange(4)}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="activity-diagram"
+            id="activity-diagram"
+          >
+            <Typography>Aktivite Diyagramı</Typography>
+          </AccordionSummary>
+
+          <AccordionDetails className={style?.sidebar__nodes}>
+            
+            <SidebarItem label="Başlangıç">
+              <CustomNodes key="act_start" data={{ type: NodeType.AKTIVITE_BASLAT }} draggable inSidebar />
+            </SidebarItem>
+
+            <SidebarItem label="İşlem">
+              <CustomNodes key="act_action" data={{ type: NodeType.AKTIVITE_ISLEM }} draggable inSidebar initialValue="İşlem" />
+            </SidebarItem>
+
+            <SidebarItem label="Karar">
+              <CustomNodes key="act_decision" data={{ type: NodeType.AKTIVITE_KARAR }} draggable inSidebar />
+            </SidebarItem>
+
+            <SidebarItem label="Çatal">
+              <CustomNodes key="act_fork" data={{ type: NodeType.AKTIVITE_CATAL }} draggable inSidebar />
+            </SidebarItem>
+
+            <SidebarItem label="Bitiş">
+              <CustomNodes key="act_end" data={{ type: NodeType.AKTIVITE_BITIS }} draggable inSidebar />
+            </SidebarItem>
+
+          </AccordionDetails>
+        </Accordion>
+
       </div>
     </>
   );
