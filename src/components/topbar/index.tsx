@@ -40,9 +40,15 @@ const TopBar = () => {
           UML Çizdirme
         </Typography>
 
+        {/* --- DOSYA MENÜSÜ --- */}
         <Button size="small" onClick={openMenu("dosya")}>DOSYA</Button>
         <Menu anchorEl={anchor.dosya} open={!!anchor.dosya} onClose={closeMenu("dosya")}>
           <MenuItem onClick={act("menu:new-diagram")}>Yeni</MenuItem>
+          <Divider />
+          
+          {/* Bulut Depolama Seçeneği */}
+          <MenuItem onClick={act("menu:cloud-storage")}>☁️ Bulut Depolama (Giriş/Kayıt)</MenuItem>
+          
           <Divider />
           <MenuItem onClick={act("menu:save-json")}>Kaydet (JSON)</MenuItem>
           <MenuItem onClick={act("menu:load-json")}>Aç (JSON)</MenuItem>

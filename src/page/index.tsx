@@ -48,7 +48,6 @@ import ActivationNode from "../components/nodes/components/sequence/ActivationNo
 import NoteNode from "../components/nodes/components/sequence/NoteNode";
 import FragmentNode from "../components/nodes/components/sequence/FragmentNode";
 
-// 🔹 YENİ EKLENEN IMPORTLAR (Aktivite Diyagramı)
 import StartNode from "../components/nodes/components/activity/StartNode";
 import EndNode from "../components/nodes/components/activity/EndNode";
 import ActionNode from "../components/nodes/components/activity/ActionNode";
@@ -58,6 +57,7 @@ import ForkNode from "../components/nodes/components/activity/ForkNode";
 import StylePanel from "../components/stylePanel";
 import DownloadComponent from "../components/download";
 import TopBar from "../components/topbar";
+import CloudModal from "../components/CloudModal"; // YENİ: Bulut Modalı eklendi
 
 import { Context, type PropertiesType } from "../store";
 import { toPng } from "html-to-image";
@@ -88,14 +88,14 @@ const nodeTypes = {
   [NodeType.ARAYUZ]: InterfaceNode,
   [NodeType.NESNE]: ObjectNode,
 
-  // 🔹 Sequence
+  // Sequence
   [NodeType.AKTOR]: ActorNode,
   [NodeType.LIFELINE]: LifelineNode,
   [NodeType.AKTIVASYON]: ActivationNode,
   [NodeType.NOTE]: NoteNode,
   [NodeType.FRAGMENT]: FragmentNode,
 
-  // 🔹 Aktivite Diyagramı
+  // Aktivite Diyagramı
   [NodeType.AKTIVITE_BASLAT]: StartNode,
   [NodeType.AKTIVITE_BITIS]: EndNode,
   [NodeType.AKTIVITE_ISLEM]: ActionNode,
@@ -144,6 +144,9 @@ function Home() {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>(initialNodes as Node[]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
+
+  // YENİ: Bulut modalının açık/kapalı durumu
+  const [cloudModalOpen, setCloudModalOpen] = useState(false);
 
   const { dispatch, state } = useContext(Context);
 
@@ -195,7 +198,7 @@ function Home() {
         NodeType.FRAGMENT,
         NodeType.NOTE,
         NodeType.AKTIVASYON,
-        // Aktivite diyagramı elemanları (Kendi iç stilleri var)
+        // Aktivite diyagramı elemanları
         NodeType.AKTIVITE_BASLAT,
         NodeType.AKTIVITE_BITIS,
         NodeType.AKTIVITE_KARAR,
@@ -250,6 +253,14 @@ function Home() {
     [handleDrop]
   );
 
+  // YENİ: Buluttan gelen veriyi sahneye yükleme fonksiyonu
+  const handleLoadDiagram = (newNodes: Node[], newEdges: Edge[]) => {
+      setNodes(newNodes);
+      setEdges(newEdges);
+      // Görünümü ortalamak için küçük bir gecikme
+      setTimeout(() => reactFlowInstance.current?.fitView({ padding: 0.2 }), 100);
+  };
+
   useEffect(() => {
     const applyStyle = () => {
       const id = state.selectedNodeId;
@@ -275,7 +286,7 @@ function Home() {
     };
   }, [onTouchEnd, setNodes, state.nodes, state.selectedNodeId]);
 
-  /* ---- TopBar menüleri ---- */
+  /* ---- TopBar menü olayları ---- */
   useEffect(() => {
     const saveJson = () => {
       const data = JSON.stringify({ nodes, edges }, null, 2);
@@ -330,12 +341,16 @@ function Home() {
     const fitView = () =>
       reactFlowInstance.current?.fitView({ padding: 0.2, duration: 300 });
 
+    // YENİ: Bulut menüsünü açma olayı
+    const openCloud = () => setCloudModalOpen(true);
+
     EventHandler.on("menu:save-json", saveJson);
     EventHandler.on("menu:load-json", loadJson);
     EventHandler.on("menu:export-png", exportPng);
     EventHandler.on("menu:new-diagram", newDiagram);
     EventHandler.on("menu:delete-selection", deleteAll);
     EventHandler.on("menu:fit-view", fitView);
+    EventHandler.on("menu:cloud-storage", openCloud); // Listener eklendi
 
     return () => {
       EventHandler.remove("menu:save-json", saveJson);
@@ -344,6 +359,7 @@ function Home() {
       EventHandler.remove("menu:new-diagram", newDiagram);
       EventHandler.remove("menu:delete-selection", deleteAll);
       EventHandler.remove("menu:fit-view", fitView);
+      EventHandler.remove("menu:cloud-storage", openCloud); // Temizlendi
     };
   }, [nodes, edges, setNodes, setEdges]);
 
@@ -367,7 +383,6 @@ function Home() {
             onEdgeClick={onEdgeClick}
             onNodeClick={handleNodeClick}
             connectionMode={ConnectionMode.Loose}
-            // Aktivite diyagramı için varsayılan olarak STEP (köşeli) çizgi
             connectionLineType={ConnectionLineType.Step}
             defaultEdgeOptions={{ 
               type: 'step', 
@@ -386,30 +401,25 @@ function Home() {
           <div
             style={{
               position: "fixed",
-              bottom: 30, // Biraz daha yukarıdan
+              bottom: 30,
               left: "50%",
               transform: "translateX(-50%)",
-              // Yarı saydam beyaz arka plan
               background: "rgba(255, 255, 255, 0.9)",
-              // Arka planı bulanıklaştır (Buzlu cam efekti)
               backdropFilter: "blur(12px)",
               WebkitBackdropFilter: "blur(12px)",
-              // Daha ince ve zarif bir çerçeve
               border: "1px solid rgba(255, 255, 255, 0.4)",
-              // Daha modern, yumuşak ve derin bir gölge
               boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04)",
-              borderRadius: 16, // Daha yuvarlak köşeler
+              borderRadius: 16,
               padding: "10px 14px",
               zIndex: 2000,
               display: "flex",
-              gap: 12, // Elemanlar arası boşluk
+              gap: 12,
               alignItems: "center",
               fontFamily: "'Inter', sans-serif",
             }}
           >
             <span style={{ fontSize: 13, fontWeight: 600, color: "#444" }}>Bağlantı Tipi:</span>
             
-            {/* Özel Dropdown Tasarımı */}
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
               <select
                 defaultValue="association"
@@ -456,10 +466,8 @@ function Home() {
                   );
                 }}
                 style={{
-                  // Standart görünümü gizle
                   appearance: "none", 
                   WebkitAppearance: "none",
-                  // İkon için sağdan boşluk bırak
                   padding: "8px 34px 8px 12px",
                   borderRadius: 8,
                   border: "1px solid #d1d5db",
@@ -472,7 +480,6 @@ function Home() {
                   boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                   transition: "all 0.2s ease",
                 }}
-                // Odaklanınca mavi çerçeve (inline olarak ekliyoruz)
                 onFocus={(e) => e.currentTarget.style.borderColor = "#2563eb"}
                 onBlur={(e) => e.currentTarget.style.borderColor = "#d1d5db"}
               >
@@ -491,7 +498,6 @@ function Home() {
                 <option value="seq:destroy">Yok Etme Mesajı</option>
               </select>
               
-              {/* Özel Aşağı Ok İkonu (SVG) */}
               <div style={{ position: "absolute", right: 10, pointerEvents: "none", display: "flex", color: "#6b7280" }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="6 9 12 15 18 9"></polyline>
@@ -499,14 +505,13 @@ function Home() {
               </div>
             </div>
 
-            {/* Modern Kapat Butonu (X İkonu) */}
             <button 
               onClick={() => setSelectedEdgeId(null)} 
               style={{ 
                 background: "transparent",
                 border: "none",
                 padding: 6,
-                borderRadius: "50%", // Yuvarlak buton
+                borderRadius: "50%",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -515,7 +520,6 @@ function Home() {
                 transition: "all 0.2s",
                 marginLeft: 2
               }}
-              // Üzerine gelince koyulaşsın
               onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,0,0,0.05)"; e.currentTarget.style.color = "#374151"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#9ca3af"; }}
             >
@@ -530,6 +534,16 @@ function Home() {
         <Sidebar />
         <StylePanel />
         <DownloadComponent nodes={nodes} />
+
+        {/* --- YENİ: Bulut Modalı Eklendi --- */}
+        <CloudModal 
+           open={cloudModalOpen} 
+           onClose={() => setCloudModalOpen(false)}
+           currentNodes={nodes}
+           currentEdges={edges}
+           onLoadDiagram={handleLoadDiagram}
+        />
+
       </ReactFlowProvider>
     </div>
   );
